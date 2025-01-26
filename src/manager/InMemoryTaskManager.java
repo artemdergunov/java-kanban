@@ -157,7 +157,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTasks() {
         for (Integer taskId : tasks.keySet()) {
-
+            historyManager.remove(taskId);
         }
         tasks.clear();
     }
@@ -165,10 +165,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteEpics() {
         for (Integer epicId : epics.keySet()) {
-
+            historyManager.remove(epicId);
         }
         for (Integer subtaskId : subtasks.keySet()) {
-
+            historyManager.remove(subtaskId);
         }
         epics.clear();
         subtasks.clear();
@@ -177,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubtasks() {
         for (Integer subtaskId : subtasks.keySet()) {
-
+            historyManager.remove(subtaskId);
         }
         subtasks.clear();
         for (Epic epic : epics.values()) {
@@ -190,7 +190,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskByID(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
-
+            historyManager.remove(id);
         } else {
             System.out.println("Задача с ID " + " не найдена");
         }
@@ -202,10 +202,10 @@ public class InMemoryTaskManager implements TaskManager {
             ArrayList<Subtask> epicSubtasks = epics.get(id).getSubtaskList();
             for (Subtask subtask : epicSubtasks) {
                 subtasks.remove(subtask.getId());
-
+                historyManager.remove(subtask.getId());
             }
             epics.remove(id);
-
+            historyManager.remove(id);
         } else {
             System.out.println("Эпик с ID " + id + " не найден");
         }
@@ -217,7 +217,7 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subtask = subtasks.get(id);
             int epicID = subtask.getEpicID();
             subtasks.remove(id);
-
+            historyManager.remove(id);
             // обновляем список подзадач и статус эпика
             Epic epic = epics.get(epicID);
             epic.removeSubtask(subtask);
