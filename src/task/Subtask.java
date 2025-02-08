@@ -1,6 +1,7 @@
 package task;
 
 import enums.Status;
+import enums.TaskType;
 
 public class Subtask extends Task {
 
@@ -29,5 +30,10 @@ public class Subtask extends Task {
                 ", epicID=" + epicID +
                 ", status=" + getStatus() +
                 '}';
+    }
+
+    @Override
+    public String toStringFromFile() {
+        return String.format("%s,%s,%s,%s,%s,%s\n", getId(), TaskType.SUBTASK, getName(), getStatus(), getDescription(), getEpicID());
     }
 }

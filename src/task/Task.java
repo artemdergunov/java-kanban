@@ -1,6 +1,7 @@
 package task;
 
 import enums.Status;
+import enums.TaskType;
 
 import java.util.Objects;
 
@@ -76,5 +77,9 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public String toStringFromFile() {
+        return String.format("%s,%s,%s,%s,%s\n",id, TaskType.TASK, name, status, description);
     }
 }
