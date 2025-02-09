@@ -23,7 +23,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public void save() throws ManagerSaveException {
+    private void save() throws ManagerSaveException {
+        if (file == null) {
+            throw new ManagerSaveException("Невозможно сохранить данные в файл.");
+        }
+
         final String title = "id,type,name,status,description,id_links\n";
         List<String> lines = new ArrayList<>();
         lines.add(title);
@@ -38,10 +42,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         for (Subtask subTask : getSubtasks()) {
             lines.add(subTask.toStringFromFile());
-        }
-
-        if (file == null) {
-            throw new ManagerSaveException("Невозможно сохранить данные в файл.");
         }
 
         try {
@@ -67,11 +67,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new RuntimeException(e);
         }
 
-        lines.removeFirst();
-
+        if (!lines.isEmpty()) {
+            lines.remove(0);
+        }
         for (String line : lines) {
             deSerialize(line);
         }
+
+        updateCurrentId();
     }
 
     private List<String> loadFromCsv() throws ManagerSaveException {
@@ -100,14 +103,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String[] lines = line.trim().split(",");
         TaskType taskType = TaskType.valueOf(lines[1]);
         switch (taskType) {
-            case TASK -> super.addTask(
+            case TASK -> super.saveTask(
                     new Task(
                             Integer.parseInt(lines[0]),
                             lines[2],
                             lines[4],
                             getTaskStatusFromString(lines[3])
                     ));
-            case EPIC -> super.addEpic(
+
+            case EPIC -> super.saveEpic(
                     new Epic(
                             Integer.parseInt(lines[0]),
                             lines[2],
@@ -118,7 +122,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             case SUBTASK -> {
                 int subTaskId = Integer.parseInt(lines[0]);
                 int epicId = Integer.parseInt(lines[lines.length - 1]);
-                super.addSubtask(
+                super.saveSubtask(
                         new Subtask(
                                 subTaskId,
                                 lines[2],
@@ -132,7 +136,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Status getTaskStatusFromString(String line) {
         return switch (line) {
-            case "NEW" -> Status.NEW;
             case "IN_PROGRESS" -> Status.IN_PROGRESS;
             case "DONE" -> Status.DONE;
             default -> Status.NEW;

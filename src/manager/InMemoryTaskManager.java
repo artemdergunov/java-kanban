@@ -254,4 +254,39 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.IN_PROGRESS);
         }
     }
+
+    protected void saveTask(Task task) {
+        tasks.put(task.getId(), task);
+    }
+
+    protected void saveEpic(Epic epic) {
+        epics.put(epic.getId(), epic);
+    }
+
+    protected void saveSubtask(Subtask subtask) {
+        subtasks.put(subtask.getId(), subtask);
+        Epic epic = epics.get(subtask.getEpicID());
+
+        if (epic != null) {
+            epic.addSubtask(subtask);
+        }
+    }
+
+    protected void updateCurrentId() {
+        int maxId = 0;
+
+        for (int id : tasks.keySet()) {
+            if (id > maxId) maxId = id;
+        }
+
+        for (int id : epics.keySet()) {
+            if (id > maxId) maxId = id;
+        }
+
+        for (int id : subtasks.keySet()) {
+            if (id > maxId) maxId = id;
+        }
+
+        curretndId = maxId + 1;
+    }
 }
