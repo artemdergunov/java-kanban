@@ -1,6 +1,7 @@
 package task;
 
 import enums.Status;
+import enums.TaskType;
 
 import java.util.ArrayList;
 
@@ -41,5 +42,10 @@ public class Epic extends Task {
                 ", subtasks.size = " + subtaskList.size() +
                 ", status = " + getStatus() +
                 '}';
+    }
+
+    @Override
+    public String toStringFromFile() {
+        return String.format("%s,%s,%s,%s,%s\n", getId(), TaskType.EPIC, getName(),getStatus(), getDescription());
     }
 }
